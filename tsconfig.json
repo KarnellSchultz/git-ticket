@@ -1,13 +1,16 @@
 {
-  "compilerOptions": {
-    "noEmit": true,
-    "module": "ESNext",
-    "target": "ESNext",
-    "moduleResolution": "node",
-    "strict": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
-  },
-  "include": ["packages"]
+    "compilerOptions": {
+        "declaration": true,
+        "declarationMap": true,
+        "esModuleInterop": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "outDir": "dist",
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "ES2022"
+    },
+    "include": ["src"]
 }
