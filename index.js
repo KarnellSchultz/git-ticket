@@ -57,8 +57,7 @@ async function main() {
 						if (!value.startsWith("XD-")) return 'Please enter a valid ticket prefix. Start with XD-';
 					},
 				})
-			}
-			,
+			},
 			message: () =>
 				p.text({
 					message: 'What is your commit message?',
@@ -66,10 +65,14 @@ async function main() {
 						if (!value) return 'Please enter a commit message.';
 					},
 				}),
-			stage: () => {
+			stage: async () => {
+				// git command to see how many file are unstaged
+				const outPut = await runCommand('git status --porcelain')
+				const stagedFiles = outPut.toString().split("\n").length - 1
+
 				return p.confirm({
-					message: `Stage all files?`,
-					initialValue: true,
+					message: `Stage all files? ${stagedFiles} files will be staged.`,
+					initialValue: false,
 				})
 			},
 			install: ({ results }) =>
@@ -86,19 +89,29 @@ async function main() {
 		}
 	);
 
-	if (project.install) {
+	if (!project.install) {
+		p.cancel('Operation cancelled.');
+		process.exit(0);
+	}
+
+	if (project.stage) {
 		const s = p.spinner();
 		s.start('staging files');
 		runCommand(`git add .`)
-		// check how many files are staged
-		const outPut = await runCommand('git status --porcelain')
-		const stagedFiles = outPut.toString().split("\n").length - 1
-		console.log(stagedFiles);
+		await setTimeout(1000);
+		s.stop('files staged ✅');
+	}
+
+
+	if (project.install) {
+		const s = p.spinner();
 		s.start('commiting via xxl-git-ticket');
 		runCommand(`git commit -m "${project.prefix} ${project.message}"`)
 		await setTimeout(1000);
-		s.stop('Done!');
+		s.stop('success ✅');
 	}
+
+
 
 	let nextSteps = `Happy coding`;
 
