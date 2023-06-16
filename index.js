@@ -2,9 +2,7 @@ import * as p from '@clack/prompts';
 import { setTimeout } from 'node:timers/promises';
 import color from 'picocolors';
 
-// const { exec } = require('child_process');
-// const arg1 = process.argv[2];
-
+import { exec } from 'child_process'
 
 // exec('git branch --show-current', (err, stdout, stderr) => {
 // 	if (err) {
@@ -26,70 +24,57 @@ import color from 'picocolors';
 // 	});
 // });
 
-import { spawn } from 'child_process'
-
-
+const runCommand = (command) => {
+	return new Promise((resolve, reject) => {
+		exec(command, (error, stdout, stderr) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(stdout);
+			}
+		});
+	});
+};
 
 
 
 async function main() {
 	console.clear();
 
-	await setTimeout(1000);
-
 	p.intro(`${color.bgCyan(color.bgGreen(' xxl-git-ticket '))}`);
 
 
-	const command = spawn('git', ['branch', '--show-current']);
-
-	let outPut = '';
-	command.stdout.on('data', (data) => {
-		outPut += data.toString().split("/")[1].split("-")[0] + "-" + data.toString().split("/")[1].split("-")[1] + " ";
-	});
-
 	const project = await p.group(
 		{
-			path: () =>
-				p.text({
+			prefix: async () => {
+				const outPut = await runCommand('git branch --show-current')
+				const [ticketId, ticketNumber] = outPut.toString().toUpperCase().split("/")[1].split("-")
+				return p.text({
 					message: 'What ticket prefix do you want to use?',
-					placeholder: outPut,
+					placeholder: `${ticketId}-${ticketNumber}`,
+					initialValue: `${ticketId}-${ticketNumber}`,
 					validate: (value) => {
-						if (!value) return 'Please enter a path.';
-						if (value[0] !== '.') return 'Please enter a relative path.';
+						if (!value.startsWith("XD-")) return 'Please enter a valid ticket prefix. Start with XD-';
+					},
+				})
+			}
+			,
+			message: () =>
+				p.text({
+					message: 'What is your commit message?',
+					validate: (value) => {
+						if (!value) return 'Please enter a commit message.';
 					},
 				}),
-			password: () =>
-				p.password({
-					message: 'Provide a password',
-					validate: (value) => {
-						if (!value) return 'Please enter a password.';
-						if (value.length < 5) return 'Password should have at least 5 characters.';
-					},
-				}),
-			type: ({ results }) =>
-				p.select({
-					message: `Pick a project type within "${results.path}"`,
-					initialValue: 'ts',
-					options: [
-						{ value: 'ts', label: 'TypeScript' },
-						{ value: 'js', label: 'JavaScript' },
-						{ value: 'coffee', label: 'CoffeeScript', hint: 'oh no' },
-					],
-				}),
-			tools: () =>
-				p.multiselect({
-					message: 'Select additional tools.',
-					initialValues: ['prettier', 'eslint'],
-					options: [
-						{ value: 'prettier', label: 'Prettier', hint: 'recommended' },
-						{ value: 'eslint', label: 'ESLint', hint: 'recommended' },
-						{ value: 'stylelint', label: 'Stylelint' },
-						{ value: 'gh-action', label: 'GitHub Action' },
-					],
-				}),
-			install: () =>
+			stage: () => {
+				return p.confirm({
+					message: `Stage all files?`,
+					initialValue: true,
+				})
+			},
+			install: ({ results }) =>
 				p.confirm({
-					message: 'Install dependencies?',
+					message: `Commit the following? "${results.prefix} ${results.message}"`,
 					initialValue: false,
 				}),
 		},
@@ -103,16 +88,25 @@ async function main() {
 
 	if (project.install) {
 		const s = p.spinner();
-		s.start('Installing via pnpm');
-		await setTimeout(5000);
-		s.stop('Installed via pnpm');
+		s.start('staging files');
+		runCommand(`git add .`)
+		// check how many files are staged
+		const outPut = await runCommand('git status --porcelain')
+		const stagedFiles = outPut.toString().split("\n").length - 1
+		console.log(stagedFiles);
+		s.start('commiting via xxl-git-ticket');
+		runCommand(`git commit -m "${project.prefix} ${project.message}"`)
+		await setTimeout(1000);
+		s.stop('Done!');
 	}
 
-	let nextSteps = `cd ${project.path}        \n${project.install ? '' : 'pnpm install\n'}pnpm dev`;
+	let nextSteps = `Happy coding`;
 
 	p.note(nextSteps, 'Next steps.');
 
 	p.outro(`Problems? ${color.underline(color.cyan('https://example.com/issues'))}`);
 }
 
-main().catch(console.error);
+
+
+main();
