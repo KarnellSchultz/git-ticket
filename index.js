@@ -66,7 +66,6 @@ async function main() {
 					},
 				}),
 			stage: async () => {
-				// git command to see how many file are unstaged
 				const outPut = await runCommand('git status --porcelain')
 				const stagedFiles = outPut.toString().split("\n").length - 1
 
@@ -108,7 +107,7 @@ async function main() {
 		s.start('commiting via xxl-git-ticket');
 		runCommand(`git commit -m "${project.prefix} ${project.message}"`)
 		await setTimeout(1000);
-		s.stop('success ✅');
+		s.stop('commited ✅');
 	}
 
 
@@ -121,5 +120,4 @@ async function main() {
 }
 
 
-
-main();
+main().catch((err) => console.error(err));
