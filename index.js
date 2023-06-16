@@ -97,7 +97,7 @@ async function main() {
 		const s = p.spinner();
 		s.start('staging files');
 		runCommand(`git add .`)
-		await setTimeout(1000);
+		await setTimeout(500);
 		s.stop('files staged ✅');
 	}
 
@@ -106,15 +106,10 @@ async function main() {
 		const s = p.spinner();
 		s.start('commiting via xxl-git-ticket');
 		runCommand(`git commit -m "${project.prefix} ${project.message}"`)
-		await setTimeout(1000);
+		await setTimeout(500);
 		s.stop('commited ✅');
 	}
 
-
-
-	let nextSteps = `Happy coding`;
-
-	p.note(nextSteps, 'Next steps.');
 
 	p.outro(`Problems? ${color.underline(color.cyan('https://example.com/issues'))}`);
 }
