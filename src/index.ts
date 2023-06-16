@@ -52,7 +52,7 @@ async function main() {
             },
             install: ({ results }) =>
                 p.confirm({
-                    message: `Commit with the following message? "${results.prefix}${results.message}"`,
+                    message: `Commit with the following message? "${results.prefix} ${results.message}"`,
                     initialValue: false,
                 }),
         },
