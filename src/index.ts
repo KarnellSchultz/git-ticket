@@ -15,7 +15,7 @@ async function main() {
 
                 if (!isXDBranch(outPut)) {
                     p.cancel(
-                        `${color.bgRed(
+                        `${color.red(
                             "You are not on a XD- branch. Update your branch name to XD-<ticket-number> and try again."
                         )}`
                     )

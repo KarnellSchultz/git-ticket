@@ -9,7 +9,7 @@ async function main() {
         prefix: async () => {
             const outPut = (await runCommand("git branch --show-current"));
             if (!isXDBranch(outPut)) {
-                p.cancel(`${color.bgRed("You are not on a XD- branch. Update your branch name to XD-<ticket-number> and try again.")}`);
+                p.cancel(`${color.red("You are not on a XD- branch. Update your branch name to XD-<ticket-number> and try again.")}`);
             }
             const ticketNumber = getTicketNumber(outPut);
             return p.text({
