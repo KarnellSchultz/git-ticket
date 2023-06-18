@@ -52,7 +52,9 @@ async function main() {
             },
             install: ({ results }) =>
                 p.confirm({
-                    message: `Commit with the following message? "${results.prefix} ${results.message}"`,
+                    message: `Commit with the following message? "${results.prefix as string} ${
+                        results.message as string
+                    }"`,
                     initialValue: false,
                 }),
         },
@@ -72,7 +74,7 @@ async function main() {
     if (project.stage) {
         const s = p.spinner()
         s.start("staging files")
-        runCommand(`git add .`)
+        await runCommand(`git add .`)
         await setTimeout(500)
         s.stop("files staged ✅")
     }
@@ -80,7 +82,7 @@ async function main() {
     if (project.install) {
         const s = p.spinner()
         s.start("commiting via xxl-git-ticket")
-        runCommand(`git commit -m "${project.prefix} ${project.message}"`)
+        await runCommand(`git commit -m "${project.prefix} ${project.message}"`)
         await setTimeout(500)
         s.stop("commited ✅")
     }

@@ -55,14 +55,14 @@ async function main() {
     if (project.stage) {
         const s = p.spinner();
         s.start("staging files");
-        runCommand(`git add .`);
+        await runCommand(`git add .`);
         await setTimeout(500);
         s.stop("files staged ✅");
     }
     if (project.install) {
         const s = p.spinner();
         s.start("commiting via xxl-git-ticket");
-        runCommand(`git commit -m "${project.prefix} ${project.message}"`);
+        await runCommand(`git commit -m "${project.prefix} ${project.message}"`);
         await setTimeout(500);
         s.stop("commited ✅");
     }
