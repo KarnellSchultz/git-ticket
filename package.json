@@ -1,11 +1,11 @@
 {
-    "name": "git-ticket",
+    "name": "xxl-git-ticket",
     "version": "0.0.1",
-    "description": "",
+    "description": "A simple CLI tool to create a git branch with a ticket number and title",
     "type": "module",
     "main": "./dist/index.js",
     "keywords": [],
-    "author": "",
+    "author": "Kanrell Schultz",
     "license": "ISC",
     "scripts": {
         "build": "tsc",
